@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800" rel="stylesheet">
+        <script src="jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    </head>
+    <body>
+        <div class="container" style="padding-top: 30px">
+            <h1><img src="chemicon.jpg" width="40px"> Electrolysis experiment</h1>
+
+            <form id="input-form">
+            <div class="row">
+                <div class="input-group mb-3 col">
+                <input required value="1.01" id="fe2so43_value" type="number" min="0" step="any" class="form-control" aria-label="Amount (to the nearest dollar)">
+                    <div class="input-group-append">
+                        <span class="input-group-text">litres</span>
+                    </div>
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" style="background-color: #DC3545;color:white">Fe<sub>2</sub>(SO4)<sub>3</sub></span>
+                    </div>
+                    <input required value="0.01" id="fe2so43_M" type="number" min="0" step="any" class="form-control" aria-label="Amount (to the nearest dollar)">
+                    <div class="input-group-append">
+                        <span class="input-group-text">M</span>
+                    </div>
+                    
+                </div><p style="line-height:2.3"><b>+</b></p>
+                <div class="input-group mb-3 col">
+                    <input value="1" id="cucl2_value" type="number" min="0" step="any" class="form-control" aria-label="Amount (to the nearest dollar)">
+                    <div class="input-group-append">
+                        <span class="input-group-text">litres</span>
+                    </div>
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"  style="background-color: #17A2B8;color:white">CuCl<sub>2</sub></span>
+                    </div>
+                    <input value="0.01" id="cucl2_M" type="number" min="0" step="any" class="form-control" aria-label="Amount (to the nearest dollar)">
+                    <div class="input-group-append">
+                        <span class="input-group-text">M</span>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <b>The total value of the mixture is considered to be <u>1000 litres</u></b>
+            </div>
+            <div class="row">
+                <p><b>Constant: </b> <i>Avogadro constant=6.02.10<sup>23</sup> ; M<sub>H<sub>2</sub>O</sub>=1g/ml</i></p>
+            </div>
+            <button id="analyse-button" type="submit" class="btn btn-primary">Analyse</button>
+            </form>
+            
+            <div class="row" style="margin-top: 30px; max-height: 50vh">
+                <div id="loading" class="container col-md-7" style="display:none">
+                    <img src="loading.gif" width="100%" height="100%">
+                </div>
+        
+                <div style="display:non" class="col-md-7" id="chart-container">
+                    <h4>Chart</h4>
+                    <canvas id="myChart" width="100" height="50"></canvas>
+                </div>
+                <div style="display:non" class="col-md-5" id="statistics">
+                    <h4>Logs</h4>
+                    <div id="info">
+                    </div>
+                    <p id="err" style="display:none">Invalid inputs</p>
+                    <table class="table table-hover" id="log-table" style="display:none">
+                        <thead>
+                            <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Reactions</th>
+                            <th scope="col">n<sub>Fe<sup>3+</sup></sub></th>
+                            <th scope="col">n<sub>Cu<sup>2+</sup></sub></th>
+                            <th scope="col">pH</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr id="t0">
+                                <th scope="row">0</th>
+                                <td scope="row">
+                                    <p>Fe<sup>3+</sup> + e<sup>-</sup> -> Fe<sup>2+</sup></p>
+                                    <p>2H<sub>2</sub>O -> O<sub>2</sub> + 4H<sup>+</sup> + 4e<sup>-</sup></p>
+                                </td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                            </tr>
+                            <tr id="t1">
+                                <th scope="row">t1</th>
+                                <td scope="row">
+                                    <p>Fe<sup>3+</sup> + e<sup>-</sup> -> Fe<sup>2+</sup></p>
+                                    <p>2H<sub>2</sub>O -> O<sub>2</sub> + 4H<sup>+</sup> + 4e<sup>-</sup></p>
+                                </td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                            </tr>
+                            <tr id="t2">
+                                <th scope="row">t2</th>
+                                <td scope="row">
+                                    <p>Cu<sup>2+</sup> + 2e<sup>-</sup> -> Cu</sup></p>
+                                    <p>2H<sub>2</sub>O -> O<sub>2</sub> + 4H<sup>+</sup> + 4e<sup>-</sup></p>
+                                </td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                            </tr>
+                            <tr id="t3">
+                                <th scope="row">t3</th>
+                                <td scope="row">
+                                    The reactions stop. <br>(Cu<sup>2+</sup> is out)
+                                </td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                            </tr>
+                        </tbody>
+                        </table>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script>
+            $("#input-form").submit(function(e){
+                e.preventDefault();
+            })
+            var floatPrecision = 4, eps = 0.0000001;
+            var h2o ;// litres
+            var fe2so43,cucl2;
+
+            var Hplus = h2o/1e7;
+            var limitHplus;
+            var pH;
+            var pH_t0, pH_t1,pH_t2,pH_t3,pH_t4;
+
+            function t0(){
+                pH = -Math.log10(Hplus/h2o).toPrecision(floatPrecision);
+                pH_t0 = pH;
+                $("#t0 td:nth-child(3)").html(2*fe2so43);
+                $("#t0 td:nth-child(4)").html(cucl2);
+                $("#t0 td:nth-child(5)").html(pH_t0);
+                pH_t1 = pH;
+            }
+
+            function t1(){
+                if (fe2so43 >= cucl2){
+                    // if a >= b 
+                    // (2a-2b) mol fe3+ is left, Cl- is out
+                    var Fe3left = (2*fe2so43 - 2*cucl2);
+                    // now, n(H+) is added with 2(a-b)
+                    Hplus += Fe3left;
+                    if (Hplus > limitHplus)
+                        Hplus = limitHplus;
+                    pH = -Math.log10(Hplus/h2o).toPrecision(floatPrecision);
+
+                    if (pH*(pH-eps) < 0 || pH*(pH+eps) < 0)
+                        pH = 0;
+                    pH_t2 = pH;
+                    
+                    $("#t1 td:nth-child(3)").html((2*(fe2so43-cucl2)).toPrecision(floatPrecision));
+                    $("#t1 td:nth-child(4)").html(cucl2);
+                    $("#t1 td:nth-child(5)").html(pH_t1);
+                }
+                else{
+
+                }
+            }
+
+            function t2(){
+                if (fe2so43 >= cucl2){
+                    // if a >= b 
+                    // fe3+ is out
+                    var Cu2left = cucl2;
+                    // now, n(H+) is added with 2b
+                    Hplus += 2*Cu2left;
+                    console.log("+ "+Hplus);
+                    if (Hplus > limitHplus)
+                        Hplus = limitHplus;
+                    pH = -Math.log10(Hplus/h2o).toPrecision(floatPrecision);
+
+                    if (pH*(pH-eps) < 0 || pH*(pH+eps) < 0)
+                        pH = 0;
+                    pH_t3 = pH;
+                    $("#t2 td:nth-child(3)").html(0);
+                    $("#t2 td:nth-child(4)").html(cucl2);
+                    $("#t2 td:nth-child(5)").html(pH_t2);
+                }
+                else{
+
+                }
+            }
+
+            function t3(){
+                pH_t4 = pH_t3;
+                $("#t3 td:nth-child(5)").html(pH_t3);
+            }
+
+            function t4(){
+                $("#t4 td:nth-child(5)").html(pH_t4);
+            }
+
+            function showLog(status,a,b){              
+                if (!status){
+                    $("#err").show();
+                }
+                else{
+                    $("#err").hide();
+                    t0();t1();t2();t3();t4();
+                    $("#log-table").show();
+                }
+                $("#statistics").show();
+            }
+
+            $("#analyse-button").click(function(){
+                h2o = (parseFloat($("#fe2so43_value").val()) + parseFloat($("#cucl2_value").val())).toPrecision(floatPrecision);
+                Hplus = h2o/1e7;
+                limitHplus = 1/18 * 1000 * h2o
+                pH = -Math.log10(Hplus);
+                fe2so43 = (parseFloat($("#fe2so43_value").val())*parseFloat($("#fe2so43_M").val())).toPrecision(floatPrecision);
+                cucl2 = (parseFloat($("#cucl2_value").val())*parseFloat($("#cucl2_M").val())).toPrecision(floatPrecision);
+                    
+                $("#chart-container").html('<h4>Chart</h4><canvas id="myChart" width="100" height="50"></canvas>');
+                $("#chart-container").hide();
+                
+                $("#statistics").hide();
+                $("#loading").show();
+                setTimeout(function(){
+                    
+                    
+                    $("#info").html("<p><b>Total value: "+h2o+" litres</b></p>"
+                                    +"<p><b>n<sub>Fe<sub>2</sub>(SO4)<sub>3</sub></sub>="+fe2so43+" mol</b>"
+                                    +" ; <b>n<sub>CuCl<sub>2</sub></sub>="+cucl2+" mol</b>"
+                                    +"</p>")
+                    //alert(fe2so43);alert(cucl2);
+                    $("#loading").hide();
+                    if (fe2so43 == "" || cucl2 == ""){
+                        showLog(0,0,0);
+                        return;
+                    }
+                    else{
+                        //fe2so43 = parseFloat(fe2so43);
+                        //cucl2 = parseFloat(cucl2);
+                        showLog(1,fe2so43,cucl2);
+                        var ctx = document.getElementById("myChart");
+                        var data_arr = [pH_t0,pH_t1,pH_t2,pH_t3,pH_t4];
+                        console.log(data_arr);
+                        var myChart = new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: ["0", "t1", "t2", "t3", "Final"],
+                                datasets: [{
+                                    label: 'pH level',
+                                    data: data_arr,
+                                    backgroundColor: [
+                                        'rgba(255, 99, 132, 0.2)',
+                                        'rgba(54, 162, 235, 0.2)',
+                                        'rgba(255, 206, 86, 0.2)',
+                                        'rgba(75, 192, 192, 0.2)',
+                                        'rgba(153, 102, 255, 0.2)',
+                                    ],
+                                    borderColor: [
+                                        'rgba(255,99,132,1)',
+                                        'rgba(54, 162, 235, 1)',
+                                        'rgba(255, 206, 86, 1)',
+                                        'rgba(75, 192, 192, 1)',
+                                        'rgba(153, 102, 255, 1)',
+                                    ],
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                scales: {
+                                    yAxes: [{
+                                        display: true,
+                                        scaleLabel: {
+                                            display: true,
+                                            labelString: "pH level"
+                                        },
+                                        ticks: {
+                                            display: true,
+                                            beginAtZero:true,
+                                            max: 14
+                                        }
+                                    }],
+                                    xAxes: [{
+                                        scaleLabel: {
+                                            display: true,
+                                            labelString: "Time"
+                                        }
+                                    }]
+                                }
+                            }
+                        });
+                    }
+                    $("#chart-container").show();
+                },500);               
+            });
+        </script>
+</html>
